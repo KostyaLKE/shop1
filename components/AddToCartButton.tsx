@@ -10,7 +10,7 @@ export default function AddToCartButton({ product }: { product: any }) {
         addToCart(product);
         alert("Товар додано в кошик!");
       }}
-      className="w-full bg-slate-900 text-white py-4 rounded-xl font-bold text-lg hover:bg-black transition active:scale-95"
+      className="bg-slate-900 text-white px-8 py-3 rounded-xl font-bold text-base hover:bg-black transition active:scale-95 shadow-lg shadow-slate-200"
     >
       Купити
     </button>
