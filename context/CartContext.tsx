@@ -2,12 +2,14 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react"
 
-const CartContext = createContext(undefined)
+// Создаем контекст
+const CartContext = createContext<any>(undefined)
 
-export function CartProvider({ children }) {
-  const [cartItems, setCartItems] = useState([])
+export function CartProvider({ children }: { children: React.ReactNode }) {
+  const [cartItems, setCartItems] = useState<any[]>([])
   const [mounted, setMounted] = useState(false)
 
+  // Загружаем корзину из LocalStorage при старте
   useEffect(() => {
     const stored = localStorage.getItem("ncase-cart")
     if (stored) {
@@ -20,13 +22,14 @@ export function CartProvider({ children }) {
     setMounted(true)
   }, [])
 
+  // Сохраняем корзину в LocalStorage при изменениях
   useEffect(() => {
     if (mounted) {
       localStorage.setItem("ncase-cart", JSON.stringify(cartItems))
     }
   }, [cartItems, mounted])
 
-  const addToCart = (product) => {
+  const addToCart = (product: any) => {
     setCartItems((items) => {
       const existing = items.find((item) => item.id === product.id)
       if (existing) {
@@ -50,11 +53,11 @@ export function CartProvider({ children }) {
     })
   }
 
-  const removeFromCart = (id) => {
+  const removeFromCart = (id: string) => {
     setCartItems((items) => items.filter((item) => item.id !== id))
   }
 
-  const updateQuantity = (id, quantity) => {
+  const updateQuantity = (id: string, quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(id)
     } else {
@@ -75,8 +78,8 @@ export function CartProvider({ children }) {
     0
   )
 
-  if (!mounted) return children
-
+  // Мы убрали проверку (!mounted), чтобы Provider всегда оборачивал приложение.
+  // Это решает ошибку "useCart must be used within CartProvider"
   return (
     <CartContext.Provider
       value={{
