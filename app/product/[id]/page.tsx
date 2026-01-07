@@ -1,84 +1,87 @@
-import { getProductById, getProducts } from "@/lib/data"
+import { getProductById } from "@/lib/data"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import AddToCartButton from "@/components/AddToCartButton" // Создадим ниже
+import AddToCartButton from "@/components/AddToCartButton"
+import ProductGallery from "@/components/ProductGallery"
 
 export default async function ProductPage({ params }: { params: { id: string } }) {
-  // Декодируем ID, так как он может содержать спецсимволы
   const id = decodeURIComponent(params.id)
   const product = await getProductById(id)
 
-  if (!product) {
-    return notFound()
-  }
+  if (!product) return notFound()
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <Link href="/catalog" className="text-slate-500 hover:text-black mb-8 block">
-        ← Повернутися в каталог
-      </Link>
+    <div className="container mx-auto px-4 py-8 md:py-12">
+      <div className="mb-6">
+        <Link href="/catalog" className="inline-flex items-center text-slate-500 hover:text-slate-900 transition font-medium">
+          ← Назад у каталог
+        </Link>
+      </div>
 
-      <div className="grid md:grid-cols-2 gap-12">
-        {/* Фото */}
-        <div className="bg-slate-50 rounded-2xl p-8 flex items-center justify-center h-[400px] md:h-[500px]">
-           <img 
-             src={product.image} 
-             alt={product.name}
-             className="max-h-full max-w-full object-contain" 
-           />
+      <div className="grid lg:grid-cols-2 gap-10 xl:gap-16">
+        {/* Левая колонка: Галерея */}
+        <div>
+           <ProductGallery images={product.images} />
         </div>
 
-        {/* Информация */}
-        <div>
-           <div className="text-sm text-blue-600 font-bold mb-2 uppercase tracking-wider">
-             {product.category}
-           </div>
-           <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-             {product.name}
-           </h1>
-           <div className="text-3xl font-bold text-slate-900 mb-8">
-             {product.price} грн
-           </div>
-
-           <div className="bg-slate-50 p-6 rounded-xl mb-8">
-              <div className="flex items-center justify-between mb-4">
-                 <span className="text-green-600 font-medium">✓ В наявності</span>
-                 <span className="text-slate-500">Код: {product.id}</span>
-              </div>
-              {/* Клиентская кнопка добавления в корзину */}
-              <AddToCartButton product={product} />
-           </div>
-
-           {/* Характеристики */}
-           <div className="mb-8">
-             <h3 className="font-bold text-lg mb-4 border-b pb-2">Характеристики</h3>
-             <div className="grid grid-cols-2 gap-y-2 text-sm">
+        {/* Правая колонка: Инфо */}
+        <div className="space-y-8">
+           <div>
+             <span className="inline-block bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3">
+               {product.category}
+             </span>
+             <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight mb-4">
+               {product.name}
+             </h1>
+             <div className="flex items-center gap-4">
+                <span className="text-3xl font-bold text-slate-900">{product.price} грн</span>
                 {product.vendor && (
-                    <>
-                        <div className="text-slate-500">Бренд:</div>
-                        <div>{product.vendor}</div>
-                    </>
-                )}
-                {product.compat && (
-                    <>
-                        <div className="text-slate-500">Сумісність:</div>
-                        <div>{product.compat}</div>
-                    </>
-                )}
-                {product.material && (
-                    <>
-                        <div className="text-slate-500">Матеріал:</div>
-                        <div>{product.material}</div>
-                    </>
+                    <span className="text-slate-400 font-medium">| {product.vendor}</span>
                 )}
              </div>
            </div>
 
+           <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100">
+              <div className="flex items-center justify-between mb-6">
+                 <div className="flex items-center gap-2 text-green-600 font-bold text-sm">
+                    <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                    В наявності
+                 </div>
+                 <div className="text-slate-400 text-sm">Артикул: {product.id}</div>
+              </div>
+              
+              {/* Кнопка теперь меньше */}
+              <div className="flex gap-4">
+                  <AddToCartButton product={product} />
+              </div>
+           </div>
+
+           {/* Характеристики */}
+           {(product.compat || product.material) && (
+             <div>
+               <h3 className="font-bold text-lg mb-4 text-slate-900">Характеристики</h3>
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                  {product.compat && (
+                      <div className="bg-white p-3 rounded-lg border border-slate-100">
+                          <span className="block text-slate-400 text-xs mb-1">Сумісність</span>
+                          <span className="font-medium text-slate-700">{product.compat}</span>
+                      </div>
+                  )}
+                  {product.material && (
+                      <div className="bg-white p-3 rounded-lg border border-slate-100">
+                          <span className="block text-slate-400 text-xs mb-1">Матеріал</span>
+                          <span className="font-medium text-slate-700">{product.material}</span>
+                      </div>
+                  )}
+               </div>
+             </div>
+           )}
+
            {/* Описание */}
            <div>
-             <h3 className="font-bold text-lg mb-4 border-b pb-2">Опис</h3>
-             <div className="prose text-slate-600 leading-relaxed">
-               {product.description || "Опис відсутній для цього товару."}
+             <h3 className="font-bold text-lg mb-4 text-slate-900">Опис товару</h3>
+             <div className="prose prose-slate text-slate-600 leading-relaxed whitespace-pre-line">
+               {product.description || "Опис відсутній."}
              </div>
            </div>
         </div>
