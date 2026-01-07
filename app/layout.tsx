@@ -5,8 +5,8 @@ import Footer from '@/components/Footer'
 import { CartProvider } from '@/context/CartContext'
 
 export const metadata: Metadata = {
-  title: 'NCASE - Магазин Аксессуаров',
-  description: 'Лучшие аксессуары по лучшим ценам',
+  title: 'ТОП-чехол - Аксесуари для телефонів',
+  description: 'Найкращі чохли та скло в Україні',
 }
 
 export default function RootLayout({
