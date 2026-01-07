@@ -1,7 +1,7 @@
 "use client"
 
 import { useCart } from "@/context/CartContext"
-import { useState } from "react"
+import { useState, FormEvent } from "react" // Додано FormEvent
 import Link from "next/link"
 
 export default function Cart() {
@@ -16,8 +16,8 @@ export default function Cart() {
     email: "",
   })
 
-  // ИСПРАВЛЕНИЕ: Добавлен тип React.FormEvent для 'e'
-  const handleSubmit = async (e: React.FormEvent) => {
+  // ВИПРАВЛЕННЯ: вказано тип (e: FormEvent)
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setLoading(true)
 
@@ -42,7 +42,7 @@ ${itemsList}
       const token = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN
       const chatId = process.env.NEXT_PUBLIC_TELEGRAM_CHAT_ID
 
-      // Если токены не заданы, просто имитируем успех (чтобы сайт не падал при тесте без .env)
+      // Перевірка наявності токенів
       if (!token || !chatId) {
         console.warn("Telegram tokens missing, simulating success")
         setSubmitted(true)
@@ -66,7 +66,6 @@ ${itemsList}
       if (response.ok) {
         setSubmitted(true)
         clearCart()
-        // Редирект через 3 секунды
         setTimeout(() => {
           window.location.href = "/"
         }, 3000)
