@@ -1,45 +1,43 @@
+import Link from "next/link"
+
 export default function Footer() {
   return (
-    <footer className="bg-slate-900 text-white py-12 mt-16">
+    <footer className="bg-slate-900 text-white py-12 border-t border-slate-800">
       <div className="container mx-auto px-4">
-        <div className="grid md:grid-cols-4 gap-8 mb-8">
+        <div className="grid md:grid-cols-4 gap-8 mb-12">
           <div>
-            <h3 className="font-bold text-lg mb-4">Про магазин</h3>
-            <p className="text-slate-400 text-sm">
-              NCASE Shop — ваш надійний партнер у виборі якісних аксесуарів
+            <h3 className="font-bold text-lg mb-6 flex items-center gap-2">🔥 ТОП-чехол</h3>
+            <p className="text-slate-400 text-sm leading-relaxed">
+              Ваш надійний партнер у виборі якісних аксесуарів для мобільних пристроїв.
             </p>
           </div>
           <div>
-            <h3 className="font-bold text-lg mb-4">Категорії</h3>
-            <ul className="space-y-2 text-slate-400 text-sm">
-              <li><a href="/catalog" className="hover:text-white transition">Каталог</a></li>
-              <li><a href="/catalog" className="hover:text-white transition">Нові товари</a></li>
-              <li><a href="/catalog" className="hover:text-white transition">Популярні</a></li>
+            <h3 className="font-bold text-lg mb-6">Каталог</h3>
+            <ul className="space-y-3 text-slate-400 text-sm">
+              <li><Link href="/catalog?category=Чохли" className="hover:text-white transition">Чохли</Link></li>
+              <li><Link href="/catalog?category=Захисне%20скло" className="hover:text-white transition">Захисне скло</Link></li>
+              <li><Link href="/catalog?category=Кабелі" className="hover:text-white transition">Кабелі та зарядки</Link></li>
             </ul>
           </div>
           <div>
-            <h3 className="font-bold text-lg mb-4">Допомога</h3>
-            <ul className="space-y-2 text-slate-400 text-sm">
-              <li><a href="#" className="hover:text-white transition">Доставка</a></li>
-              <li><a href="#" className="hover:text-white transition">Контакти</a></li>
-              <li><a href="#" className="hover:text-white transition">FAQ</a></li>
+            <h3 className="font-bold text-lg mb-6">Клієнтам</h3>
+            <ul className="space-y-3 text-slate-400 text-sm">
+              <li><Link href="/about" className="hover:text-white transition">Про нас</Link></li>
+              <li><Link href="/offer" className="hover:text-white transition">Публічна оферта</Link></li>
+              <li><Link href="/cart" className="hover:text-white transition">Кошик</Link></li>
             </ul>
           </div>
           <div>
-            <h3 className="font-bold text-lg mb-4">Контакти</h3>
-            <p className="text-slate-400 text-sm mb-2">
-              📧 support@ncase.shop<br/>
-              📞 +38 (0__) ___-__-__<br/>
-              🕐 Пн-Пт: 9:00 - 18:00
+            <h3 className="font-bold text-lg mb-6">Контакти</h3>
+            <p className="text-slate-400 text-sm mb-4">
+              Ми працюємо щодня з 9:00 до 18:00
             </p>
+            <a href="tel:+380000000000" className="block text-xl font-bold hover:text-blue-400 transition">+38 (000) 000-00-00</a>
           </div>
         </div>
 
-        <hr className="border-slate-700 my-8" />
-
-        <div className="text-center text-slate-400 text-sm">
-          <p>&copy; 2024 NCASE Shop. Усі права захищені.</p>
-          <p className="mt-2">Розроблено з ❤️ на Next.js + Tailwind CSS</p>
+        <div className="border-t border-slate-800 pt-8 text-center text-slate-500 text-sm">
+          <p>&copy; {new Date().getFullYear()} ТОП-чехол. Всі права захищені.</p>
         </div>
       </div>
     </footer>
