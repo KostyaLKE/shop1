@@ -112,13 +112,9 @@ export async function getProducts() {
         // Якщо категорія null (товар виключений), пропускаємо
         if (!finalCategory) return null;
 
-        // Обробка бренду: якщо PRC, то прибираємо його (або пропускаємо товар, якщо треба)
-        // Тут ми просто стираємо назву бренду, але залишаємо товар.
-        // Якщо треба приховати товар повністю, поверніть null.
+        // Обробка бренду
         let vendor = row["Бренд"] || "";
         if (vendor.toUpperCase() === "PRC") {
-           // Якщо ви хочете ПРИХОВАТИ товари PRC, розкоментуйте рядок нижче:
-           // return null; 
            vendor = "";
         }
 
@@ -138,11 +134,10 @@ export async function getProducts() {
             .trim();
 
         // Формування даних для фільтрів
-        const color = row["Дизайн"] || ""; // У цьому файлі колір часто в колонці "Дизайн"
+        const color = row["Дизайн"] || ""; 
         const deviceBrand = row["Марка пристрою"] || "";
         const deviceModel = row["Модель пристрою"] || "";
         
-        // Формуємо красивий рядок сумісності
         const compat = [deviceBrand, deviceModel].filter(Boolean).join(" ");
 
         return {
@@ -156,7 +151,6 @@ export async function getProducts() {
             vendor: vendor,
             compat: compat,
             material: row["Матеріал"] || "",
-            // Додаткові поля, які можна використати для фільтрів у майбутньому
             color: color,
             model: deviceModel,
             deviceBrand: deviceBrand
@@ -172,7 +166,8 @@ export async function getProducts() {
 }
 
 export async function getCategories(products: any[]) {
-  const uniqueCategories = [...new Set(products.map((p) => p.category))].sort();
+  // ВИПРАВЛЕННЯ ТУТ: використовуємо Array.from замість [...]
+  const uniqueCategories = Array.from(new Set(products.map((p) => p.category))).sort();
   return uniqueCategories as string[]
 }
 
