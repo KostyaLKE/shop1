@@ -6,14 +6,14 @@ const CSV_FILE_NAME = "ncaseua-2.csv"
 
 // Функция для объединения категорий
 function normalizeCategory(rawCategory: string, name: string): string | null {
-  const cat = rawCategory.toLowerCase();
-  const n = name.toLowerCase();
+  const cat = (rawCategory || "").toLowerCase();
+  const n = (name || "").toLowerCase();
 
-  // 1. Исключения (то, что не нужно)
+  // Исключения
   if (cat.includes("плоттер") || n.includes("плоттер") || cat.includes("плівка для різання")) return null;
   if (cat.includes("самокат") || n.includes("самокат") || cat.includes("гіроборд")) return null;
 
-  // 2. Группировка
+  // Группировка
   if (cat.includes("чохол") || cat.includes("case") || cat.includes("накладка") || cat.includes("книжка")) return "Чохли";
   if (cat.includes("скло") || cat.includes("glass") || cat.includes("плівка")) return "Захисне скло";
   if (cat.includes("кабель") || cat.includes("cable") || cat.includes("дата")) return "Кабелі";
@@ -23,7 +23,6 @@ function normalizeCategory(rawCategory: string, name: string): string | null {
   if (cat.includes("тримач") || cat.includes("holder") || cat.includes("авто")) return "Автотовари";
   if (cat.includes("ремінець") || cat.includes("strap")) return "Ремінці для годинників";
 
-  // Если не попало никуда, оставляем "Інше" или оригинальное название, если оно короткое
   return "Інші аксесуари";
 }
 
@@ -39,29 +38,37 @@ export async function getProducts() {
     })
 
     const products = data.map((row: any) => {
-        // Берем категорию из "Вид чохла" или "Тип"
         const rawCat = row["Вид чохла"] || row["Тип"] || "";
         const name = row["Найменування"] || "";
         const finalCategory = normalizeCategory(rawCat, name);
 
-        // Если категория вернула null (исключение), то и товар не нужен
         if (!finalCategory) return null;
+
+        // Обработка картинок (разбиваем по запятой)
+        const rawImages = row["Фото"] || "/placeholder.png";
+        const images = rawImages.split(',').map((img: string) => img.trim()).filter(Boolean);
+
+        // Очистка описания от HTML тегов и <br>
+        let description = row["Опис"] || "";
+        description = description
+            .replace(/<br\s*\/?>/gi, "\n") // Заменяем <br> на перенос строки
+            .replace(/<\/?[^>]+(>|$)/g, "") // Удаляем остальные теги
+            .trim();
 
         return {
             id: row["Артикул"] || row["Код виробника"] || String(Math.random()),
             name: name || "Без назви",
             price: parseFloat(String(row["Ціна"] || "0").replace(",", ".")) || 0,
             category: finalCategory,
-            image: row["Фото"] || "/placeholder.png", // Убедись, что файл placeholder.png есть в public
-            description: row["Опис"] || "",
+            images: images.length > 0 ? images : ["/placeholder.png"], // Массив картинок
+            image: images[0] || "/placeholder.png", // Главная картинка для каталога
+            description: description,
             vendor: row["Бренд"] || "",
-            // Доп. поля для страницы товара
             compat: row["Марка пристрою"] || "",
             material: row["Матеріал"] || "",
-            model: row["Модель"] || ""
         }
     })
-    .filter((p: any) => p !== null && p.price > 0) // Убираем пустые и исключенные
+    .filter((p: any) => p !== null && p.price > 0)
 
     return products
   } catch (error) {
@@ -75,7 +82,6 @@ export async function getCategories(products: any[]) {
   return uniqueCategories as string[]
 }
 
-// Получение одного товара для страницы товара
 export async function getProductById(id: string) {
   const products = await getProducts()
   return products.find((p) => p.id === id)
