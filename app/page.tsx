@@ -10,11 +10,11 @@ export default async function Home() {
 
   return (
     <div>
-      {/* Hero Block */}
+      {/* Hero Block - залишається як був */}
       <section className="bg-slate-900 text-white py-20 md:py-32">
         <div className="container mx-auto px-4 text-center">
           <span className="inline-block py-1 px-3 rounded-full bg-blue-600 text-xs font-bold tracking-widest uppercase mb-4">
-            Нова колекція 2024
+            Нова колекція 2026
           </span>
           <h1 className="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">
             Твій телефон заслуговує <br className="hidden md:block"/>на кращий захист
@@ -41,13 +41,14 @@ export default async function Home() {
         {categories.map((cat: string) => {
           const catProducts = products
             .filter((p: any) => p.category === cat)
-            .slice(0, 4) // Показываем по 4 товара
+            .slice(0, 4)
 
           if (catProducts.length === 0) return null
 
           return (
             <div key={cat} className="mb-20">
               <div className="flex justify-between items-end mb-8 border-b border-slate-100 pb-4">
+                {/* ОНОВЛЕНО: додано клас capitalize */}
                 <h2 className="text-2xl font-bold capitalize text-slate-800">
                   {cat}
                 </h2>
@@ -68,7 +69,7 @@ export default async function Home() {
         })}
       </section>
 
-      {/* Features */}
+      {/* Features - залишається як був */}
       <section className="bg-slate-50 py-20 border-t border-slate-100">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-10 text-center">
