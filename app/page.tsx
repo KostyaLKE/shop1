@@ -1,22 +1,24 @@
 import { getProducts, getCategories } from "@/lib/data"
+import { catalogHref } from "@/lib/slugs"
 import ProductCard from "@/components/ProductCard"
+import HeroIllustration from "@/components/HeroIllustration"
 import Link from "next/link"
 
 export const dynamic = 'force-dynamic'
 
 const categoryIcons: Record<string, string> = {
-  "Чохли": "🛡️",
-  "Захисне скло": "🔮",
-  "Кабелі та перехідники": "🔌",
-  "Зарядні пристрої": "⚡",
-  "Power Bank": "🔋",
-  "Аудіо": "🎧",
-  "Автотовари та тримачі": "🚗",
-  "Ремінці для годинників": "⌚",
+  "Чохли":                      "🛡️",
+  "Захисне скло":               "🔮",
+  "Кабелі та перехідники":      "🔌",
+  "Зарядні пристрої":           "⚡",
+  "Power Bank":                 "🔋",
+  "Аудіо":                      "🎧",
+  "Автотовари та тримачі":      "🚗",
+  "Ремінці для годинників":     "⌚",
   "Смарт-годинники та гаджети": "📱",
-  "Лампи та освітлення": "💡",
-  "Захисні плівки": "🗒️",
-  "Інші аксесуари": "✨",
+  "Лампи та освітлення":        "💡",
+  "Захисні плівки":             "🗒️",
+  "Інші аксесуари":             "✨",
 }
 
 export default async function Home() {
@@ -26,37 +28,72 @@ export default async function Home() {
   return (
     <div className="bg-[#F8FAFC]">
 
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#0F172A] via-[#1e293b] to-[#0F172A] text-white py-16 md:py-28">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-10 -left-20 w-80 h-80 bg-[#2563EB] opacity-10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500 opacity-10 rounded-full blur-3xl" />
+      {/* ── Hero ── */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#0F172A] via-[#1e293b] to-[#0c1a2e] text-white">
+        {/* Background blobs */}
+        <div className="absolute inset-0 pointer-events-none select-none">
+          <div className="absolute -top-16 -left-16 w-72 h-72 bg-[#2563EB] opacity-10 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-blue-500 opacity-8 rounded-full blur-3xl" />
         </div>
-        <div className="relative max-w-[1440px] mx-auto px-4 md:px-8 lg:px-20 text-center">
-          <span className="inline-block py-1.5 px-4 rounded-full bg-[#2563EB]/20 border border-[#2563EB]/40 text-blue-300 text-xs font-semibold tracking-widest uppercase mb-6">
-            Нова колекція 2026
-          </span>
-          <h1 className="text-[28px] md:text-[48px] lg:text-[56px] font-bold mb-5 leading-[1.2] tracking-tight">
-            Твій телефон заслуговує<br className="hidden md:block" /> на кращий захист
-          </h1>
-          <p className="text-slate-400 text-base md:text-lg mb-10 max-w-xl mx-auto leading-[1.6]">
-            Величезний вибір чохлів, скла та аксесуарів.<br className="hidden md:block" /> Швидка доставка Новою Поштою по всій Україні.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              href="/catalog"
-              className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold px-8 py-3.5 rounded-xl transition-all duration-200 shadow-lg shadow-blue-900/40 active:scale-95 btn-ripple"
-            >
-              Перейти в каталог
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
+
+        <div className="relative max-w-[1440px] mx-auto px-4 md:px-8 lg:px-20">
+          <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12 py-14 md:py-20 lg:py-24">
+
+            {/* Left — text */}
+            <div className="flex-1 text-center md:text-left">
+              <span className="inline-block py-1.5 px-4 rounded-full bg-[#2563EB]/20 border border-[#2563EB]/40 text-blue-300 text-xs font-semibold tracking-widest uppercase mb-5">
+                Нова колекція 2026
+              </span>
+              <h1 className="text-[28px] sm:text-[36px] md:text-[42px] lg:text-[52px] font-bold mb-5 leading-[1.15] tracking-tight">
+                Твій телефон<br />заслуговує на<br />
+                <span className="text-[#2563EB]">кращий захист</span>
+              </h1>
+              <p className="text-slate-400 text-base md:text-lg mb-8 leading-[1.6] max-w-md mx-auto md:mx-0">
+                Величезний вибір чохлів, скла та аксесуарів.<br className="hidden md:block" />
+                Швидка доставка Новою Поштою по всій Україні.
+              </p>
+              <div className="flex flex-col sm:flex-row items-center gap-3 justify-center md:justify-start">
+                <Link
+                  href="/catalog"
+                  className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold px-8 py-3.5 rounded-xl transition-all duration-200 shadow-lg shadow-blue-900/40 active:scale-95 btn-ripple w-full sm:w-auto justify-center"
+                >
+                  Перейти в каталог
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+                <Link
+                  href={catalogHref("Чохли")}
+                  className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-medium px-6 py-3.5 rounded-xl transition-all duration-200 w-full sm:w-auto justify-center"
+                >
+                  🛡️ Чохли
+                </Link>
+              </div>
+
+              {/* Trust badges */}
+              <div className="flex items-center gap-5 mt-8 justify-center md:justify-start flex-wrap">
+                {[
+                  { icon: "🚀", text: "Відправка в день замовлення" },
+                  { icon: "🔄", text: "Обмін 14 днів" },
+                ].map((b) => (
+                  <div key={b.text} className="flex items-center gap-1.5 text-slate-400 text-sm">
+                    <span>{b.icon}</span>
+                    <span>{b.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right — illustration */}
+            <div className="w-[260px] sm:w-[300px] md:w-[340px] lg:w-[400px] shrink-0 flex items-center justify-center">
+              <HeroIllustration />
+            </div>
+
           </div>
         </div>
       </section>
 
-      {/* Category tiles */}
+      {/* ── Category tiles ── */}
       <section className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-20 py-12 md:py-16">
         <div className="text-center mb-8 md:mb-10">
           <h2 className="text-[22px] md:text-[28px] font-semibold text-[#0F172A] mb-2">Популярні категорії</h2>
@@ -66,7 +103,7 @@ export default async function Home() {
           {categories.map((cat: string) => (
             <Link
               key={cat}
-              href={`/catalog?category=${encodeURIComponent(cat)}`}
+              href={catalogHref(cat)}
               className="group bg-white hover:bg-[#2563EB] border border-slate-100 hover:border-[#2563EB] rounded-2xl p-3 md:p-4 flex flex-col items-center gap-2 text-center transition-all duration-200 hover:shadow-lg hover:shadow-blue-100 active:scale-95"
             >
               <span className="text-2xl md:text-3xl">{categoryIcons[cat] || "📦"}</span>
@@ -76,7 +113,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Products by category */}
+      {/* ── Products by category ── */}
       <section className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-20 pb-16">
         {categories.map((cat: string) => {
           const catProducts = products.filter((p: any) => p.category === cat).slice(0, 4)
@@ -89,7 +126,7 @@ export default async function Home() {
                   {cat}
                 </h2>
                 <Link
-                  href={`/catalog?category=${encodeURIComponent(cat)}`}
+                  href={catalogHref(cat)}
                   className="text-[#2563EB] hover:text-[#1D4ED8] font-semibold text-sm transition-colors duration-200 flex items-center gap-1"
                 >
                   Всі товари
@@ -108,7 +145,7 @@ export default async function Home() {
         })}
       </section>
 
-      {/* Features */}
+      {/* ── Features ── */}
       <section className="bg-white border-t border-slate-100 py-14">
         <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-20">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">

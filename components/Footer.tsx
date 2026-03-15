@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { catalogHref } from "@/lib/slugs"
 
 export default function Footer() {
   return (
@@ -22,11 +23,11 @@ export default function Footer() {
             <h3 className="font-semibold text-white text-sm uppercase tracking-wide mb-4">Каталог</h3>
             <ul className="space-y-2.5 text-slate-400 text-sm">
               {[
-                ["Чохли", "/catalog?category=%D0%A7%D0%BE%D1%85%D0%BB%D0%B8"],
-                ["Захисне скло", "/catalog?category=%D0%97%D0%B0%D1%85%D0%B8%D1%81%D0%BD%D0%B5+%D1%81%D0%BA%D0%BB%D0%BE"],
-                ["Кабелі та зарядки", "/catalog?category=%D0%9A%D0%B0%D0%B1%D0%B5%D0%BB%D1%96+%D1%82%D0%B0+%D0%BF%D0%B5%D1%80%D0%B5%D1%85%D1%96%D0%B4%D0%BD%D0%B8%D0%BA%D0%B8"],
-                ["Power Bank", "/catalog?category=Power+Bank"],
-                ["Аудіо", "/catalog?category=%D0%90%D1%83%D0%B4%D1%96%D0%BE"],
+                ["Чохли",               catalogHref("Чохли")],
+                ["Захисне скло",        catalogHref("Захисне скло")],
+                ["Кабелі та зарядки",   catalogHref("Кабелі та перехідники")],
+                ["Power Bank",          catalogHref("Power Bank")],
+                ["Аудіо",               catalogHref("Аудіо")],
               ].map(([label, href]) => (
                 <li key={label}>
                   <Link href={href} className="hover:text-white transition-colors duration-200">{label}</Link>

@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react"
 import ProductCard from "@/components/ProductCard"
 import { useSearchParams, useRouter } from "next/navigation"
+import { catalogHref } from "@/lib/slugs"
 
 interface CatalogClientProps {
   initialProducts: any[]
@@ -58,7 +59,7 @@ export default function CatalogClient({ initialProducts, categories, serverCateg
   const handleCategoryChange = (newCat: string) => {
     setCatDrawerOpen(false)
     if (newCat !== "all") {
-      router.push(`/catalog?category=${encodeURIComponent(newCat)}`, { scroll: false })
+      router.push(catalogHref(newCat), { scroll: false })
     } else {
       router.push(`/catalog`, { scroll: false })
     }

@@ -1,4 +1,5 @@
 import { getProductById } from "@/lib/data"
+import { catalogHref } from "@/lib/slugs"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import ProductActions from "@/components/ProductActions"
@@ -29,7 +30,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
           <Link href="/catalog" className="hover:text-[#2563EB] transition-colors duration-200">Каталог</Link>
           <span>/</span>
           <Link
-            href={`/catalog?category=${encodeURIComponent(product.category)}`}
+            href={catalogHref(product.category)}
             className="hover:text-[#2563EB] transition-colors duration-200"
           >
             {product.category}
