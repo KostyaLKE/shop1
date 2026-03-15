@@ -3,6 +3,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import ProductActions from "@/components/ProductActions"
 import ProductGallery from "@/components/ProductGallery"
+import ProductTabs from "@/components/ProductTabs"
 
 export default async function ProductPage({ params }: { params: { id: string } }) {
   const id = decodeURIComponent(params.id)
@@ -10,75 +11,97 @@ export default async function ProductPage({ params }: { params: { id: string } }
 
   if (!product) return notFound()
 
+  const specs = [
+    product.compat && { label: "Сумісність", value: product.compat },
+    product.material && { label: "Матеріал", value: product.material },
+    product.color && { label: "Колір", value: product.color },
+    product.vendor && { label: "Бренд", value: product.vendor },
+  ].filter(Boolean) as { label: string; value: string }[]
+
   return (
-    // ИСПРАВЛЕНИЕ: overflow-x-hidden вместо overflow-hidden, чтобы работал скролл вниз
-    <div className="container mx-auto px-4 py-6 md:py-12 overflow-x-hidden">
-      <div className="mb-4 md:mb-6">
-        <Link href="/catalog" className="inline-flex items-center text-slate-500 hover:text-slate-900 transition font-medium text-sm">
-          ← Назад у каталог
-        </Link>
-      </div>
+    <div className="bg-[#F8FAFC] min-h-screen">
+      <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-20 py-6 md:py-10">
 
-      <div className="grid lg:grid-cols-2 gap-8 lg:gap-16">
-        <div>
-           <ProductGallery images={product.images} />
-        </div>
+        {/* Breadcrumbs */}
+        <nav className="flex items-center gap-2 text-sm text-[#64748B] mb-6 flex-wrap">
+          <Link href="/" className="hover:text-[#2563EB] transition-colors duration-200">Головна</Link>
+          <span>/</span>
+          <Link href="/catalog" className="hover:text-[#2563EB] transition-colors duration-200">Каталог</Link>
+          <span>/</span>
+          <Link
+            href={`/catalog?category=${encodeURIComponent(product.category)}`}
+            className="hover:text-[#2563EB] transition-colors duration-200"
+          >
+            {product.category}
+          </Link>
+          <span>/</span>
+          <span className="text-[#0F172A] font-medium line-clamp-1">{product.name}</span>
+        </nav>
 
-        <div className="space-y-6 md:space-y-8 min-w-0">
-           <div>
-             <span className="inline-block bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-3">
-               {product.category}
-             </span>
-             <h1 className="text-2xl md:text-4xl font-extrabold text-slate-900 leading-snug mb-3 break-words">
-               {product.name}
-             </h1>
-             <div className="flex flex-wrap items-center gap-3 md:gap-4">
-                <span className="text-2xl md:text-3xl font-bold text-slate-900">{product.price} грн</span>
-                {product.vendor && (
-                    <span className="text-slate-400 font-medium text-sm md:text-base">| {product.vendor}</span>
-                )}
-             </div>
-           </div>
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-14">
 
-           <div className="bg-white md:bg-slate-50 p-0 md:p-6 rounded-2xl md:border border-slate-100">
-              <div className="flex items-center justify-between mb-4 md:mb-6 bg-slate-50 md:bg-transparent p-4 md:p-0 rounded-lg">
-                 <div className="flex items-center gap-2 text-green-600 font-bold text-sm">
-                    <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                    В наявності
-                 </div>
-                 <div className="text-slate-400 text-sm">Код: {product.id}</div>
+          {/* Gallery */}
+          <ProductGallery images={product.images} />
+
+          {/* Info */}
+          <div className="space-y-6">
+
+            {/* Category badge + title */}
+            <div>
+              <span className="inline-block bg-blue-50 text-[#2563EB] border border-blue-100 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide mb-3">
+                {product.category}
+              </span>
+              <h1 className="text-[24px] md:text-[32px] lg:text-[36px] font-bold text-[#0F172A] leading-[1.2] mb-4 break-words">
+                {product.name}
+              </h1>
+
+              {/* Stock + SKU */}
+              <div className="flex items-center gap-4 flex-wrap">
+                <div className={`flex items-center gap-1.5 text-sm font-semibold ${product.available !== false ? "text-[#10B981]" : "text-[#EF4444]"}`}>
+                  <span className={`w-2 h-2 rounded-full ${product.available !== false ? "bg-[#10B981]" : "bg-[#EF4444]"}`} />
+                  {product.available !== false ? "В наявності" : "Немає в наявності"}
+                </div>
+                <span className="text-[#64748B] text-sm">Арт: {product.id}</span>
               </div>
-              
-              <ProductActions product={product} />
-           </div>
+            </div>
 
-           {(product.compat || product.material) && (
-             <div>
-               <h3 className="font-bold text-lg mb-3 text-slate-900">Характеристики</h3>
-               <div className="grid grid-cols-1 gap-2 text-sm">
-                  {product.compat && (
-                      <div className="flex justify-between py-2 border-b border-slate-100">
-                          <span className="text-slate-500">Сумісність</span>
-                          <span className="font-medium text-slate-900 text-right w-1/2 break-words">{product.compat}</span>
-                      </div>
-                  )}
-                  {product.material && (
-                      <div className="flex justify-between py-2 border-b border-slate-100">
-                          <span className="text-slate-500">Матеріал</span>
-                          <span className="font-medium text-slate-900 text-right w-1/2 break-words">{product.material}</span>
-                      </div>
-                  )}
-               </div>
-             </div>
-           )}
+            {/* Price */}
+            <div className="bg-white rounded-2xl border border-slate-100 p-5">
+              <p className="text-[32px] md:text-[40px] font-bold text-[#0F172A] leading-none mb-1">
+                {product.price.toFixed(0)} <span className="text-lg font-medium text-[#64748B]">грн</span>
+              </p>
+              <p className="text-[#64748B] text-sm mt-2 flex items-center gap-1.5">
+                <svg className="w-4 h-4 text-[#10B981]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Доставка Новою Поштою по всій Україні
+              </p>
+            </div>
 
-           <div>
-             <h3 className="font-bold text-lg mb-3 text-slate-900">Опис</h3>
-             <div className="prose prose-slate prose-sm text-slate-600 leading-relaxed whitespace-pre-line break-words max-w-none">
-               {product.description || "Опис відсутній."}
-             </div>
-           </div>
+            {/* Actions */}
+            <ProductActions product={product} />
+
+            {/* Delivery info */}
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { icon: "📦", text: "Нова Пошта" },
+                { icon: "🔄", text: "Обмін 14 днів" },
+              ].map((item) => (
+                <div key={item.text} className="flex items-center gap-2 bg-white border border-slate-100 rounded-xl px-3 py-2.5">
+                  <span className="text-lg">{item.icon}</span>
+                  <span className="text-sm text-[#64748B] font-medium">{item.text}</span>
+                </div>
+              ))}
+            </div>
+
+          </div>
         </div>
+
+        {/* Tabs: Description + Specs */}
+        <div className="mt-10 md:mt-14">
+          <ProductTabs description={product.description} specs={specs} />
+        </div>
+
       </div>
     </div>
   )
