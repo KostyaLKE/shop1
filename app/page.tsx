@@ -52,23 +52,15 @@ export default async function Home() {
                 Величезний вибір чохлів, скла та аксесуарів.<br className="hidden md:block" />
                 Швидка доставка Новою Поштою по всій Україні.
               </p>
-              <div className="flex flex-col sm:flex-row items-center gap-3 justify-center md:justify-start">
-                <Link
-                  href="/catalog"
-                  className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold px-8 py-3.5 rounded-xl transition-all duration-200 shadow-lg shadow-blue-900/40 active:scale-95 btn-ripple w-full sm:w-auto justify-center"
-                >
-                  Перейти в каталог
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
-                  </svg>
-                </Link>
-                <Link
-                  href={catalogHref("Чохли")}
-                  className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-medium px-6 py-3.5 rounded-xl transition-all duration-200 w-full sm:w-auto justify-center"
-                >
-                  🛡️ Чохли
-                </Link>
-              </div>
+              <Link
+                href="/catalog"
+                className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-semibold px-8 py-3.5 rounded-xl transition-all duration-200 shadow-lg shadow-blue-900/40 active:scale-95 btn-ripple w-full sm:w-auto justify-center"
+              >
+                Перейти в каталог
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
 
               {/* Trust badges */}
               <div className="flex items-center gap-5 mt-8 justify-center md:justify-start flex-wrap">

@@ -8,11 +8,11 @@ export default function ProductGallery({ images }: { images: string[] }) {
   return (
     <div className="space-y-3">
       {/* Main image */}
-      <div className="bg-white rounded-2xl border border-slate-100 flex items-center justify-center overflow-hidden" style={{ minHeight: 360 }}>
+      <div className="bg-white rounded-2xl border border-slate-100 flex items-center justify-center overflow-hidden" style={{ minHeight: 280 }}>
         <img
           src={selected}
           alt="Product"
-          className="w-full h-auto max-h-[500px] object-contain p-6 transition-all duration-300"
+          className="w-full h-auto max-h-[320px] md:max-h-[500px] object-contain p-4 md:p-6 transition-all duration-300"
         />
       </div>
 

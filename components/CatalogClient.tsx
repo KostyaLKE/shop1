@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react"
 import ProductCard from "@/components/ProductCard"
 import { useSearchParams, useRouter } from "next/navigation"
-import { catalogHref } from "@/lib/slugs"
+import { catalogHref, fromSlug } from "@/lib/slugs"
 
 interface CatalogClientProps {
   initialProducts: any[]
@@ -33,7 +33,9 @@ export default function CatalogClient({ initialProducts, categories, serverCateg
   const searchParams = useSearchParams()
   const router = useRouter()
 
-  const filter = searchParams.get("category") || serverCategory || "all"
+  // Resolve slug → category name: "chohly" → "Чохли"
+  const rawSlug = searchParams.get("category") || ""
+  const filter = rawSlug ? fromSlug(rawSlug) : (serverCategory || "all")
 
   const [searchQuery, setSearchQuery] = useState(serverSearch)
   const [inputValue, setInputValue] = useState(serverSearch)
