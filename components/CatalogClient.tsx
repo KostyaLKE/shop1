@@ -28,31 +28,20 @@ const categoryIcons: Record<string, string> = {
   "Інші аксесуари": "✨",
 }
 
-function SkeletonCard() {
-  return (
-    <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden flex flex-col">
-      <div className="aspect-square skeleton" />
-      <div className="p-4 space-y-2">
-        <div className="skeleton h-4 w-full" />
-        <div className="skeleton h-4 w-3/4" />
-        <div className="skeleton h-6 w-1/2 mt-3" />
-      </div>
-    </div>
-  )
-}
-
 export default function CatalogClient({ initialProducts, categories, serverCategory, serverSearch }: CatalogClientProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
 
-  // Use searchParams on client, fall back to server-passed value on first render
   const filter = searchParams.get("category") || serverCategory || "all"
 
   const [searchQuery, setSearchQuery] = useState(serverSearch)
   const [inputValue, setInputValue] = useState(serverSearch)
   const [sort, setSort] = useState("price-asc")
   const [page, setPage] = useState(1)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  // Mobile drawers
+  const [catDrawerOpen, setCatDrawerOpen] = useState(false)
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false)
 
   useEffect(() => {
     const s = searchParams.get("search") || ""
@@ -61,9 +50,13 @@ export default function CatalogClient({ initialProducts, categories, serverCateg
     setPage(1)
   }, [searchParams])
 
-  const handleCategoryChange = (newCat: string) => {
+  // Reset page when filter changes
+  useEffect(() => {
     setPage(1)
-    setSidebarOpen(false)
+  }, [filter])
+
+  const handleCategoryChange = (newCat: string) => {
+    setCatDrawerOpen(false)
     if (newCat !== "all") {
       router.push(`/catalog?category=${encodeURIComponent(newCat)}`, { scroll: false })
     } else {
@@ -73,7 +66,6 @@ export default function CatalogClient({ initialProducts, categories, serverCateg
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setSearchQuery(inputValue)
     setPage(1)
     if (inputValue.trim()) {
       router.push(`/catalog?search=${encodeURIComponent(inputValue)}`, { scroll: false })
@@ -104,18 +96,20 @@ export default function CatalogClient({ initialProducts, categories, serverCateg
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
-  const Sidebar = () => (
+  // Category list used in both desktop sidebar and mobile drawer
+  const CategoryList = () => (
     <div className="space-y-1">
       <button
         onClick={() => handleCategoryChange("all")}
         className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-left font-medium transition-all duration-200 ${
           filter === "all"
-            ? "bg-[#2563EB] text-white shadow-md shadow-blue-100"
+            ? "bg-[#2563EB] text-white shadow-md"
             : "text-[#64748B] hover:bg-slate-100 hover:text-[#0F172A]"
         }`}
       >
-        <span>🏠</span> Всі товари
-        <span className={`ml-auto text-xs px-1.5 py-0.5 rounded-full ${filter === "all" ? "bg-white/20" : "bg-slate-100 text-slate-500"}`}>
+        <span>🏠</span>
+        <span className="flex-1">Всі товари</span>
+        <span className={`text-xs px-1.5 py-0.5 rounded-full ${filter === "all" ? "bg-white/20" : "bg-slate-100 text-slate-500"}`}>
           {initialProducts.length}
         </span>
       </button>
@@ -127,12 +121,12 @@ export default function CatalogClient({ initialProducts, categories, serverCateg
             onClick={() => handleCategoryChange(cat)}
             className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-left font-medium transition-all duration-200 ${
               filter === cat
-                ? "bg-[#2563EB] text-white shadow-md shadow-blue-100"
+                ? "bg-[#2563EB] text-white shadow-md"
                 : "text-[#64748B] hover:bg-slate-100 hover:text-[#0F172A]"
             }`}
           >
             <span>{categoryIcons[cat] || "📦"}</span>
-            <span className="line-clamp-1 flex-1">{cat}</span>
+            <span className="flex-1 line-clamp-1">{cat}</span>
             <span className={`shrink-0 text-xs px-1.5 py-0.5 rounded-full ${filter === cat ? "bg-white/20" : "bg-slate-100 text-slate-500"}`}>
               {count}
             </span>
@@ -147,7 +141,7 @@ export default function CatalogClient({ initialProducts, categories, serverCateg
       <div className="max-w-[1440px] mx-auto px-4 md:px-8 lg:px-20 py-6 md:py-10">
 
         {/* Search bar */}
-        <form onSubmit={handleSearchSubmit} className="relative mb-6 max-w-xl">
+        <form onSubmit={handleSearchSubmit} className="relative mb-5 w-full md:max-w-xl">
           <input
             type="text"
             placeholder="Пошук в каталозі..."
@@ -155,8 +149,8 @@ export default function CatalogClient({ initialProducts, categories, serverCateg
             onChange={(e) => setInputValue(e.target.value)}
             className="w-full bg-white border border-slate-200 focus:border-[#2563EB] focus:ring-2 focus:ring-blue-100 rounded-xl py-3 pl-4 pr-28 text-sm outline-none transition-all duration-200 shadow-sm"
           />
-          <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex gap-1">
-            {searchQuery && (
+          <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex gap-1 items-center">
+            {(searchQuery || inputValue) && (
               <button
                 type="button"
                 onClick={() => {
@@ -165,9 +159,11 @@ export default function CatalogClient({ initialProducts, categories, serverCateg
                   setPage(1)
                   router.push("/catalog", { scroll: false })
                 }}
-                className="px-3 py-1.5 text-xs text-[#64748B] hover:text-[#0F172A] transition"
+                className="p-1.5 text-slate-400 hover:text-slate-600 transition-colors"
               >
-                Скинути
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             )}
             <button
@@ -180,8 +176,8 @@ export default function CatalogClient({ initialProducts, categories, serverCateg
         </form>
 
         {searchQuery && (
-          <div className="mb-5 bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 text-sm text-[#2563EB] font-medium">
-            Результати пошуку: <strong>«{searchQuery}»</strong> — {filteredProducts.length} товарів
+          <div className="mb-4 bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 text-sm text-[#2563EB] font-medium">
+            Результати для: <strong>«{searchQuery}»</strong> — {filteredProducts.length} товарів
           </div>
         )}
 
@@ -190,14 +186,12 @@ export default function CatalogClient({ initialProducts, categories, serverCateg
           {/* Desktop Sidebar */}
           <aside className="hidden md:block w-64 shrink-0 sticky top-24">
             <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
-              <h3 className="font-semibold text-[#0F172A] text-sm uppercase tracking-wide mb-4">Категорії</h3>
-              <div className="max-h-[60vh] overflow-y-auto custom-scrollbar pr-1">
-                <Sidebar />
+              <p className="text-xs font-semibold text-[#64748B] uppercase tracking-wider mb-3">Категорії</p>
+              <div className="max-h-[55vh] overflow-y-auto custom-scrollbar pr-1">
+                <CategoryList />
               </div>
-
               <hr className="my-4 border-slate-100" />
-
-              <h3 className="font-semibold text-[#0F172A] text-sm uppercase tracking-wide mb-3">Сортування</h3>
+              <p className="text-xs font-semibold text-[#64748B] uppercase tracking-wider mb-3">Сортування</p>
               <select
                 value={sort}
                 onChange={(e) => { setSort(e.target.value); setPage(1) }}
@@ -209,40 +203,50 @@ export default function CatalogClient({ initialProducts, categories, serverCateg
             </div>
           </aside>
 
-          {/* Products */}
+          {/* Products area */}
           <div className="flex-1 min-w-0">
-            {/* Mobile top bar */}
-            <div className="flex md:hidden items-center justify-between mb-4 gap-3">
+
+            {/* Mobile controls row */}
+            <div className="flex md:hidden items-center gap-2 mb-4">
+              {/* Categories button */}
               <button
-                onClick={() => setSidebarOpen(true)}
-                className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-medium text-[#0F172A] shadow-sm"
+                onClick={() => setCatDrawerOpen(true)}
+                className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium text-[#0F172A] shadow-sm flex-1 justify-center"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8M4 18h16" />
+                </svg>
+                {filter !== "all" ? (
+                  <span className="truncate max-w-[100px]">{filter}</span>
+                ) : "Категорії"}
+                {filter !== "all" && (
+                  <span className="w-2 h-2 rounded-full bg-[#2563EB] shrink-0" />
+                )}
+              </button>
+
+              {/* Filters (sort) button */}
+              <button
+                onClick={() => setFilterDrawerOpen(true)}
+                className="flex items-center gap-1.5 bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm font-medium text-[#0F172A] shadow-sm flex-1 justify-center"
+              >
+                <svg className="w-4 h-4 text-[#64748B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
                 </svg>
-                {filter !== "all" ? filter : "Фільтри"}
+                Фільтри
               </button>
-              <select
-                value={sort}
-                onChange={(e) => { setSort(e.target.value); setPage(1) }}
-                className="border border-slate-200 bg-white rounded-xl px-3 py-2.5 text-sm outline-none flex-1"
-              >
-                <option value="price-asc">Від дешевих</option>
-                <option value="price-desc">Від дорогих</option>
-              </select>
             </div>
 
             {/* Title + count */}
             <div className="flex justify-between items-center mb-5">
-              <h1 className="text-[20px] md:text-[28px] font-bold text-[#0F172A] leading-tight">
+              <h1 className="text-[18px] md:text-[28px] font-bold text-[#0F172A] leading-tight truncate pr-4">
                 {searchQuery ? "Результати пошуку" : filter === "all" ? "Всі товари" : filter}
               </h1>
-              <span className="text-[#64748B] text-sm font-medium bg-white border border-slate-100 px-3 py-1 rounded-full shadow-sm">
+              <span className="shrink-0 text-[#64748B] text-sm font-medium bg-white border border-slate-100 px-3 py-1 rounded-full shadow-sm">
                 {filteredProducts.length} шт.
               </span>
             </div>
 
-            {/* Grid */}
+            {/* Grid — key forces full re-render on filter/sort change */}
             {currentProducts.length === 0 ? (
               <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-slate-200">
                 <div className="text-5xl mb-3">😔</div>
@@ -251,7 +255,10 @@ export default function CatalogClient({ initialProducts, categories, serverCateg
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5">
+              <div
+                key={`${filter}__${sort}__${page}`}
+                className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-5"
+              >
                 {currentProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
@@ -264,7 +271,7 @@ export default function CatalogClient({ initialProducts, categories, serverCateg
                 <button
                   disabled={page === 1}
                   onClick={() => handlePageChange(page - 1)}
-                  className="w-10 h-10 flex items-center justify-center border border-slate-200 bg-white rounded-xl hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 text-[#64748B]"
+                  className="w-10 h-10 flex items-center justify-center border border-slate-200 bg-white rounded-xl hover:bg-slate-50 disabled:opacity-40 transition-all duration-200 text-[#64748B]"
                 >
                   ←
                 </button>
@@ -281,7 +288,7 @@ export default function CatalogClient({ initialProducts, categories, serverCateg
                       onClick={() => handlePageChange(p)}
                       className={`w-10 h-10 flex items-center justify-center rounded-xl text-sm font-semibold transition-all duration-200 ${
                         page === p
-                          ? "bg-[#2563EB] text-white shadow-md shadow-blue-100"
+                          ? "bg-[#2563EB] text-white shadow-md"
                           : "border border-slate-200 bg-white text-[#64748B] hover:bg-slate-50"
                       }`}
                     >
@@ -293,7 +300,7 @@ export default function CatalogClient({ initialProducts, categories, serverCateg
                 <button
                   disabled={page === totalPages}
                   onClick={() => handlePageChange(page + 1)}
-                  className="w-10 h-10 flex items-center justify-center border border-slate-200 bg-white rounded-xl hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 text-[#64748B]"
+                  className="w-10 h-10 flex items-center justify-center border border-slate-200 bg-white rounded-xl hover:bg-slate-50 disabled:opacity-40 transition-all duration-200 text-[#64748B]"
                 >
                   →
                 </button>
@@ -303,25 +310,74 @@ export default function CatalogClient({ initialProducts, categories, serverCateg
         </div>
       </div>
 
-      {/* Mobile sidebar drawer */}
-      {sidebarOpen && (
+      {/* Mobile: Categories drawer */}
+      {catDrawerOpen && (
         <div className="fixed inset-0 z-50 md:hidden">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setSidebarOpen(false)} />
+          <div className="absolute inset-0 bg-black/40" onClick={() => setCatDrawerOpen(false)} />
           <div className="absolute left-0 top-0 bottom-0 w-72 bg-white flex flex-col shadow-2xl">
-            <div className="flex items-center justify-between p-5 border-b border-slate-100">
-              <h3 className="font-bold text-[#0F172A]">Категорії</h3>
-              <button onClick={() => setSidebarOpen(false)} className="p-1 rounded-lg hover:bg-slate-100">
-                <svg className="w-5 h-5 text-[#64748B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <svg className="w-4 h-4 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8M4 18h16" />
+                </svg>
+                <h3 className="font-bold text-[#0F172A]">Категорії</h3>
+              </div>
+              <button onClick={() => setCatDrawerOpen(false)} className="p-1.5 rounded-lg hover:bg-slate-100 text-[#64748B]">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-4">
-              <Sidebar />
+              <CategoryList />
             </div>
           </div>
         </div>
       )}
+
+      {/* Mobile: Filters (sort) drawer */}
+      {filterDrawerOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setFilterDrawerOpen(false)} />
+          <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <svg className="w-4 h-4 text-[#64748B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" />
+                </svg>
+                <h3 className="font-bold text-[#0F172A]">Фільтри</h3>
+              </div>
+              <button onClick={() => setFilterDrawerOpen(false)} className="p-1.5 rounded-lg hover:bg-slate-100 text-[#64748B]">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-5 pb-8">
+              <p className="text-xs font-semibold text-[#64748B] uppercase tracking-wider mb-3">Сортування</p>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { value: "price-asc", label: "Від дешевих" },
+                  { value: "price-desc", label: "Від дорогих" },
+                ].map((opt) => (
+                  <button
+                    key={opt.value}
+                    onClick={() => { setSort(opt.value); setPage(1); setFilterDrawerOpen(false) }}
+                    className={`py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                      sort === opt.value
+                        ? "bg-[#2563EB] text-white shadow-md"
+                        : "bg-slate-100 text-[#64748B] hover:bg-slate-200"
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   )
 }

@@ -45,8 +45,8 @@ export default function Header() {
             Каталог
           </Link>
 
-          {/* Search */}
-          <form onSubmit={handleSearch} className="flex-1 max-w-none md:max-w-[40%] relative">
+          {/* Search — hidden on mobile (uses catalog search), shown on md+ */}
+          <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-[40%] relative">
             <input
               type="text"
               placeholder="Пошук товарів..."
@@ -66,12 +66,15 @@ export default function Header() {
 
           {/* Right icons */}
           <div className="flex items-center gap-1 ml-auto shrink-0">
-            {/* Catalog mobile */}
-            <Link href="/catalog" className="md:hidden p-2 rounded-xl hover:bg-slate-100 transition-all duration-200">
+            {/* Search icon on mobile — navigates to catalog */}
+            <button
+              onClick={() => router.push("/catalog")}
+              className="md:hidden p-2 rounded-xl hover:bg-slate-100 transition-all duration-200"
+            >
               <svg className="w-5 h-5 text-[#0F172A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-            </Link>
+            </button>
 
             {/* Cart */}
             <Link href="/cart" className="relative p-2 rounded-xl hover:bg-slate-100 transition-all duration-200 group">

@@ -10,6 +10,7 @@ export interface Product {
   id: string
   name: string
   price: number
+  wholesalePrice: number
   category: string
   images: string[]
   image: string
@@ -103,8 +104,9 @@ async function fetchAndParse(): Promise<{ products: Product[]; categories: Recor
 
       if (!category) return null
 
-      // Використовуємо price_rrc (роздрібна ціна) якщо є, інакше price
+      // Роздрібна ціна (price_rrc) і оптова (price)
       const rawPrice = parseFloat(String(offer.price_rrc || offer.price || "0").replace(",", ".")) || 0
+      const rawWholesale = parseFloat(String(offer.price || "0").replace(",", ".")) || 0
       if (rawPrice <= 0) return null
 
       const pictures: string[] = Array.isArray(offer.picture)
@@ -135,6 +137,7 @@ async function fetchAndParse(): Promise<{ products: Product[]; categories: Recor
         id: String(offer.vendorCode || offer["@_id"]),
         name,
         price: parseFloat(rawPrice.toFixed(2)),
+        wholesalePrice: parseFloat(rawWholesale.toFixed(2)),
         category,
         images,
         image: images[0],

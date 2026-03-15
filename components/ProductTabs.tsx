@@ -15,12 +15,12 @@ export default function ProductTabs({ description, specs }: Props) {
   return (
     <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden">
       {/* Tab bar */}
-      <div className="flex border-b border-slate-100">
+      <div className="flex border-b border-slate-100 overflow-x-auto">
         {tabs.map((tab) => (
           <button
             key={tab}
             onClick={() => setActive(tab)}
-            className={`px-6 py-4 text-sm font-semibold transition-all duration-200 border-b-2 -mb-px ${
+            className={`px-4 md:px-6 py-3.5 text-sm font-semibold transition-all duration-200 border-b-2 -mb-px whitespace-nowrap ${
               active === tab
                 ? "border-[#2563EB] text-[#2563EB]"
                 : "border-transparent text-[#64748B] hover:text-[#0F172A]"
