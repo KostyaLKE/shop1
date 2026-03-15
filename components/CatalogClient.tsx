@@ -15,25 +15,20 @@ export default function CatalogClient({ initialProducts, categories }: CatalogCl
   const searchParams = useSearchParams()
   const router = useRouter()
   
-  const initialCategory = searchParams.get("category") || "all"
+  const filter = searchParams.get("category") || "all"
   const initialSearch = searchParams.get("search") || ""
 
-  const [filter, setFilter] = useState(initialCategory)
   const [searchQuery, setSearchQuery] = useState(initialSearch)
   const [sort, setSort] = useState("price-asc")
   const [page, setPage] = useState(1)
 
   useEffect(() => {
     setSearchQuery(searchParams.get("search") || "")
-    setFilter(searchParams.get("category") || "all")
     setPage(1)
   }, [searchParams])
 
   const handleCategoryChange = (newCat: string) => {
-    setFilter(newCat);
-    setSearchQuery("");
     setPage(1);
-    
     if (newCat !== "all") {
         router.push(`/catalog?category=${encodeURIComponent(newCat)}`, { scroll: false });
     } else {
