@@ -7,6 +7,8 @@ import { useSearchParams, useRouter } from "next/navigation"
 interface CatalogClientProps {
   initialProducts: any[]
   categories: string[]
+  serverCategory: string
+  serverSearch: string
 }
 
 const ITEMS_PER_PAGE = 20
@@ -39,15 +41,15 @@ function SkeletonCard() {
   )
 }
 
-export default function CatalogClient({ initialProducts, categories }: CatalogClientProps) {
+export default function CatalogClient({ initialProducts, categories, serverCategory, serverSearch }: CatalogClientProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
 
-  const filter = searchParams.get("category") || "all"
-  const initialSearch = searchParams.get("search") || ""
+  // Use searchParams on client, fall back to server-passed value on first render
+  const filter = searchParams.get("category") || serverCategory || "all"
 
-  const [searchQuery, setSearchQuery] = useState(initialSearch)
-  const [inputValue, setInputValue] = useState(initialSearch)
+  const [searchQuery, setSearchQuery] = useState(serverSearch)
+  const [inputValue, setInputValue] = useState(serverSearch)
   const [sort, setSort] = useState("price-asc")
   const [page, setPage] = useState(1)
   const [sidebarOpen, setSidebarOpen] = useState(false)
